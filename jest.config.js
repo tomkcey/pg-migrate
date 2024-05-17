@@ -15,8 +15,8 @@ module.exports = {
     testPathIgnorePatterns: ["src/index.ts"],
     coveragePathIgnorePatterns: ["src/index.ts"],
 
-    maxWorkers: "25%",
+    maxWorkers: "100%",
 
-    // globalSetup: "<rootDir>/src/test/setup-global.ts",
-    // globalTeardown: "<rootDir>/src/test/teardown-global.ts",
+    globalSetup: "<rootDir>/test/setup.ts",
+    globalTeardown: "<rootDir>/test/teardown.ts",
 };

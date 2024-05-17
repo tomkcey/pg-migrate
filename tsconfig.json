@@ -3,12 +3,12 @@
         "target": "es2022",
         "module": "NodeNext",
         "outDir": "dist",
-        "rootDir": "src",
         "strict": true,
         "esModuleInterop": true,
         "sourceMap": true,
         "moduleResolution": "NodeNext",
         "removeComments": true,
     },
-    "exclude": ["node_modules", "dist", "tmp", "migrations"]
+    "exclude": ["node_modules", "dist", "tmp", "migrations", "test"],
+    "include": ["src", "test"]
 }

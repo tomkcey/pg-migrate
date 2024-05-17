@@ -14,17 +14,12 @@ export abstract class Executor<T> {
     protected abstract map(row: QueryResultRow): T;
 
     public async execute(statement: SQLStatement): Promise<T[]> {
-        if (this.state === ExecutorState.Disconnected) {
-            await this.client.connect();
-            this.state = ExecutorState.Connected;
-        }
-
         const { rows } = await this.client.query(statement);
         return rows.map((row) => this.map(row));
     }
 
     public async transaction<U>(
-        fn: (executor: Executor<T>) => Promise<U>,
+        fn: (executor: Pick<Executor<T>, "execute">) => Promise<U>,
     ): Promise<U> {
         return this.client
             .query("BEGIN")
@@ -37,6 +32,13 @@ export abstract class Executor<T> {
                 await this.client.query("ROLLBACK");
                 throw error;
             });
+    }
+
+    public async connect() {
+        if (this.state === ExecutorState.Disconnected) {
+            await this.client.connect();
+            this.state = ExecutorState.Connected;
+        }
     }
 
     public async disconnect(): Promise<void> {

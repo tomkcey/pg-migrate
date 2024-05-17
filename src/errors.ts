@@ -13,6 +13,10 @@ abstract class MigrationError extends Error {
     }
 }
 
+export function isMigrationError(x: unknown): x is MigrationError {
+    return x instanceof MigrationError;
+}
+
 export class NameAlreadyExistsError extends MigrationError {
     protected readonly code = MigrationErrorCode.NameAlreadyExists;
 

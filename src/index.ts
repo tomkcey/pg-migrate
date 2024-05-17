@@ -1,7 +1,7 @@
-import path from "path";
 import { Migrator } from "./migrator";
 import { Logger } from "./interfaces";
-import { UnrecognizedCommandError } from "./errors";
+import { UnrecognizedCommandError, isMigrationError } from "./errors";
+import { getConfig } from "./config";
 
 const COMMANDS = ["create", "up", "down"] as const;
 
@@ -12,22 +12,9 @@ async function main(logger: Logger) {
         throw new UnrecognizedCommandError(command, COMMANDS);
     }
 
-    const migrationPath = path.join(__dirname, "..", "migrations");
+    const config = getConfig();
 
-    logger.info(`Migration path: ${migrationPath}`);
-
-    const migrator = new Migrator({
-        path: migrationPath,
-        table: "migrations",
-        database: {
-            host: "localhost",
-            port: 5432,
-            user: "localuser",
-            password: "localpass",
-            database: "localdb",
-            ssl: false,
-        },
-    });
+    const migrator = new Migrator(config, logger);
 
     switch (command) {
         case "create":
@@ -50,5 +37,10 @@ void main({
         process.stderr.write(`\n[ERROR]: ${message}`);
     },
 }).catch((error) => {
-    console.error(error.message);
+    if (isMigrationError(error)) {
+        process.stderr.write(error.message);
+        return;
+    }
+
+    throw error;
 });

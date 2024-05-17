@@ -7,9 +7,9 @@ import SQL from "sql-template-strings";
 import path from "path";
 import { NameAlreadyExistsError } from "./errors";
 import { constants, decode, encode, formatName, isNotNil, pad } from "./utils";
-import { Migration } from "./interfaces";
+import { Logger, Migration } from "./interfaces";
 
-interface MigratorOptions {
+export interface MigratorOptions {
     path: string;
     table: string;
     database: {
@@ -23,7 +23,10 @@ interface MigratorOptions {
 }
 
 export class Migrator extends Executor<Migration> {
-    constructor(protected options: MigratorOptions) {
+    constructor(
+        protected options: MigratorOptions,
+        private logger: Logger,
+    ) {
         super(new Client(options.database));
     }
 
@@ -50,7 +53,9 @@ export class Migrator extends Executor<Migration> {
             createdAt: new Date(),
         };
 
-        await explorer.write(encode(migration), [
+        const encodedMigration = encode(migration);
+
+        await explorer.write(encodedMigration, [
             {
                 filename: encode({ ...migration, direction: constants.UP }),
                 readable: Readable.from(
@@ -64,6 +69,8 @@ export class Migrator extends Executor<Migration> {
                 ),
             },
         ]);
+
+        this.logger.info(`Migration ${encodedMigration} created.`);
     }
 
     public async up(): Promise<void> {
@@ -74,6 +81,8 @@ export class Migrator extends Executor<Migration> {
         if (local.length < 1) {
             return;
         }
+
+        await this.connect();
 
         // Get list of migrations on remote system
         const remote = await this.execute(
@@ -144,14 +153,22 @@ export class Migrator extends Executor<Migration> {
                             SQL`(name, created_at) VALUES (${migration.name}, ${migration.createdAt})`,
                         ),
                 );
+
+                this.logger.info(`Migration ${directory} ran.`);
             }
-        });
+        }).catch(() =>
+            this.logger.error("Something went wrong, canceling migrations."),
+        );
+
+        this.logger.info("Migration up complete.");
 
         await this.disconnect();
     }
 
     public async down() {
         const explorer = new Explorer(this.options.path);
+
+        await this.connect();
 
         // Get list of migrations on remote system from most recent to oldest
         const remote = await this.execute(
@@ -160,47 +177,57 @@ export class Migrator extends Executor<Migration> {
                 .append(SQL`ORDER BY created_at DESC`),
         );
 
-        for (const migration of remote) {
-            // Read the contents of its down script
-            const downMigration = await explorer.find((entry) =>
-                entry.files.some((filename) =>
+        await this.transaction(async (executor) => {
+            for (const migration of remote) {
+                // Read the contents of its down script
+                const downMigration = await explorer.find((entry) =>
+                    entry.files.some((filename) =>
+                        filename.includes(constants.DOWN),
+                    ),
+                );
+
+                if (!downMigration) {
+                    await this.disconnect();
+                    throw new Error("Something went wrong.");
+                }
+
+                const file = downMigration.files.find((filename) =>
                     filename.includes(constants.DOWN),
-                ),
-            );
+                );
+                if (!file) {
+                    await this.disconnect();
+                    throw new Error("Something went wrong.");
+                }
 
-            if (!downMigration) {
-                await this.disconnect();
-                throw new Error("Something went wrong.");
+                const readable = createReadStream(
+                    path.join(this.options.path, downMigration.directory, file),
+                    { encoding: "utf8" },
+                );
+
+                // Put it into a buffer
+                const chunks: string[] = [];
+                for await (const chunk of readable) {
+                    chunks.push(chunk);
+                }
+
+                // Execute the down script
+                await executor.execute(
+                    SQL``.append(chunks.join(constants.EMPTY)),
+                );
+                // Delete the row from the migrations table
+                await executor.execute(
+                    SQL`DELETE FROM`
+                        .append(pad(this.options.table))
+                        .append(SQL`WHERE name = ${migration.name}`),
+                );
+
+                this.logger.info(`Migration ${encode(migration)} reverted.`);
             }
+        }).catch(() =>
+            this.logger.error("Something went wrong, canceling migrations."),
+        );
 
-            const file = downMigration.files.find((filename) =>
-                filename.includes(constants.DOWN),
-            );
-            if (!file) {
-                await this.disconnect();
-                throw new Error("Something went wrong.");
-            }
-
-            const readable = createReadStream(
-                path.join(this.options.path, downMigration.directory, file),
-                { encoding: "utf8" },
-            );
-
-            // Put it into a buffer
-            const chunks: string[] = [];
-            for await (const chunk of readable) {
-                chunks.push(chunk);
-            }
-
-            // Execute the down script
-            await this.execute(SQL``.append(chunks.join(constants.EMPTY)));
-            // Delete the row from the migrations table
-            await this.execute(
-                SQL`DELETE FROM`
-                    .append(pad(this.options.table))
-                    .append(SQL`WHERE name = ${migration.name}`),
-            );
-        }
+        this.logger.info("Migration down complete.");
 
         await this.disconnect();
     }
