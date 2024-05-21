@@ -3,6 +3,8 @@ import { Logger } from "./interfaces";
 import { UnrecognizedCommandError, isMigrationError } from "./errors";
 import { getConfig } from "./config";
 
+export { Migrator };
+
 const COMMANDS = ["create", "up", "down"] as const;
 
 async function main(logger: Logger) {
@@ -29,18 +31,20 @@ async function main(logger: Logger) {
     }
 }
 
-void main({
-    info(message) {
-        process.stdout.write(`\n[INFO]: ${message}`);
-    },
-    error(message) {
-        process.stderr.write(`\n[ERROR]: ${message}`);
-    },
-}).catch((error) => {
-    if (isMigrationError(error)) {
-        process.stderr.write(error.message);
-        return;
-    }
+if (require.main === module) {
+    void main({
+        info(message) {
+            process.stdout.write(`\n[INFO]: ${message}`);
+        },
+        error(message) {
+            process.stderr.write(`\n[ERROR]: ${message}`);
+        },
+    }).catch((error) => {
+        if (isMigrationError(error)) {
+            process.stderr.write(`\n[ERROR]: ${error.message}`);
+            return;
+        }
 
-    throw error;
-});
+        throw error;
+    });
+}

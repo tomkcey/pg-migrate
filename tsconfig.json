@@ -5,7 +5,7 @@
         "outDir": "dist",
         "strict": true,
         "esModuleInterop": true,
-        "sourceMap": true,
+        "sourceMap": false,
         "moduleResolution": "NodeNext",
         "removeComments": true,
     },

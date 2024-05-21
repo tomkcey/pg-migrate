@@ -1,8 +1,8 @@
 {
-    "name": "pg-migrate",
-    "version": "0.1.0",
-    "description": "A small library for managing PostgreSQL migrations using the standard pg library.",
-    "main": "index.js",
+    "name": "@tomkcey/pg-migrate",
+    "version": "0.0.0",
+    "description": "A small typed library for managing PostgreSQL migrations.",
+    "main": "dist/index.js",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/tomkcey/pg-migrate.git"
@@ -40,7 +40,7 @@
         "start": "node dist/index.js",
         "fmt": "prettier --write src/**/*.ts",
         "test": "jest -i",
-        "ci": "npm run fmt && npm run build",
+        "ci": "npm run fmt && npm run build && npm run test",
         "dev": "nodemon src/index.ts",
         "clean": "rm -rf dist coverage node_modules"
     }
