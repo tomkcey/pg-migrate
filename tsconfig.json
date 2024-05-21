@@ -9,6 +9,6 @@
         "moduleResolution": "NodeNext",
         "removeComments": true,
     },
-    "exclude": ["node_modules", "dist", "tmp", "migrations", "test"],
+    "exclude": ["node_modules", "dist", "tmp", "migrations", "test", "src/**/*.test.ts"],
     "include": ["src", "test"]
 }

@@ -1,0 +1,6 @@
+.github
+containers
+coverage
+test
+jest.config.js
+.prettierrc.json
