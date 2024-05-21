@@ -1,9 +1,9 @@
-import { Migrator } from "./migrator";
+import { Migrator, MigratorOptions } from "./migrator";
 import { Logger } from "./interfaces";
 import { UnrecognizedCommandError, isMigrationError } from "./errors";
 import { getConfig } from "./config";
 
-export { Migrator };
+export { Migrator, MigratorOptions };
 
 const COMMANDS = ["create", "up", "down"] as const;
 
