@@ -3,6 +3,7 @@
     "version": "0.0.1",
     "description": "A small typed library for managing PostgreSQL migrations.",
     "main": "dist/index.js",
+    "private": false,
     "repository": {
         "type": "git",
         "url": "git+https://github.com/tomkcey/pg-migrate.git"
@@ -42,6 +43,7 @@
         "test": "jest -i",
         "ci": "npm run fmt && npm run build && npm run test",
         "dev": "nodemon src/index.ts",
-        "clean": "rm -rf dist coverage node_modules"
+        "clean": "rm -rf dist coverage node_modules",
+        "publish": "npm publish --access public"
     }
 }
