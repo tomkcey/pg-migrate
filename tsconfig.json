@@ -7,7 +7,7 @@
         "esModuleInterop": true,
         "sourceMap": false,
         "moduleResolution": "NodeNext",
-        "removeComments": true,
+        "removeComments": false,
     },
     "exclude": ["node_modules", "dist", "tmp", "migrations", "test", "src/**/*.test.ts"],
     "include": ["src", "test"]

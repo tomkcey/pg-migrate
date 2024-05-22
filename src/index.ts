@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { Migrator, MigratorOptions } from "./migrator";
 import { Logger } from "./interfaces";
 import { UnrecognizedCommandError, isMigrationError } from "./errors";
