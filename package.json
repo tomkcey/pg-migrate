@@ -47,6 +47,6 @@
         "ci": "npm i && npm run fmt && npm run build && npm run test",
         "dev": "nodemon src/index.ts",
         "clean": "rm -rf dist coverage node_modules",
-        "publish": "npm run build && npm publish --access public"
+        "deploy": "npm run build && npm publish --access public"
     }
 }
