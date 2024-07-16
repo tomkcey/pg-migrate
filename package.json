@@ -1,6 +1,6 @@
 {
     "name": "@tomkcey/pg-migrate",
-    "version": "0.5.2",
+    "version": "0.5.3",
     "description": "A small typed library for managing PostgreSQL migrations.",
     "main": "dist/index.js",
     "bin": {
