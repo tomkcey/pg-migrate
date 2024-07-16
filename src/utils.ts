@@ -19,6 +19,7 @@ export const constants = {
     UP: "up",
     DOWN: "down",
     BAR: "|",
+    COLON: ";",
 } as const;
 
 export function pad(input: string): string {

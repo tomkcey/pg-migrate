@@ -37,6 +37,10 @@ export class Migrator extends Executor<Migration> {
         };
     }
 
+    protected parseChunkedStatement(chunks: string[]): string[] {
+        return chunks.join(constants.EMPTY).split(constants.COLON);
+    }
+
     public async create(name: string): Promise<void> {
         const explorer = new Explorer(this.options.path);
 
@@ -142,9 +146,15 @@ export class Migrator extends Executor<Migration> {
                 const migration = decode(file);
 
                 // Execute the up script
-                const stmnt = SQL``.append(chunks.join(constants.EMPTY));
-                await executor.execute(stmnt);
-                this.logger.info(`Applied ${migration.name}\n${stmnt.text}`);
+                const stmnts = this.parseChunkedStatement(chunks);
+                for (const statement of stmnts) {
+                    const stmnt = SQL``.append(statement);
+                    await executor.execute(stmnt);
+                }
+
+                this.logger.info(
+                    `Applied ${migration.name}\n${SQL``.append(chunks.join(constants.EMPTY)).text}`,
+                );
 
                 // Insert a new row in the migrations table
                 await executor.execute(
@@ -214,9 +224,17 @@ export class Migrator extends Executor<Migration> {
                 }
 
                 // Execute the down script
-                const stmnt = SQL``.append(chunks.join(constants.EMPTY));
-                await executor.execute(stmnt);
-                this.logger.info(`Applied ${migration.name}\n${stmnt.text}`);
+
+                // Execute the up script
+                const stmnts = this.parseChunkedStatement(chunks);
+                for (const statement of stmnts) {
+                    const stmnt = SQL``.append(statement);
+                    await executor.execute(stmnt);
+                }
+
+                this.logger.info(
+                    `Applied ${migration.name}\n${SQL``.append(chunks.join(constants.EMPTY)).text}`,
+                );
 
                 // Delete the row from the migrations table
                 await executor.execute(
