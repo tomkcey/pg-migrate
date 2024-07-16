@@ -153,7 +153,7 @@ export class Migrator extends Executor<Migration> {
                 }
 
                 this.logger.info(
-                    `Applied ${migration.name}\n${SQL``.append(chunks.join(constants.EMPTY)).text}`,
+                    `Applied ${migration.name} ${migration.direction ?? ""}\n${SQL``.append(chunks.join(constants.EMPTY)).text}`,
                 );
 
                 // Insert a new row in the migrations table
@@ -233,7 +233,7 @@ export class Migrator extends Executor<Migration> {
                 }
 
                 this.logger.info(
-                    `Applied ${migration.name}\n${SQL``.append(chunks.join(constants.EMPTY)).text}`,
+                    `Applied ${migration.name} ${migration.direction ?? ""}\n${SQL``.append(chunks.join(constants.EMPTY)).text}`,
                 );
 
                 // Delete the row from the migrations table
