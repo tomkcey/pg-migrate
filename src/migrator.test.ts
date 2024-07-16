@@ -33,11 +33,11 @@ describe(Migrator.name, () => {
     describe(Migrator.prototype.create.name, () => {
         afterEach(async () => cleanup());
 
-        async function checkDirEntries() {
+        async function checkDirEntries(): Promise<string[]> {
             return access(PATH)
                 .then(() =>
                     opendir(PATH).then(async (dir) => {
-                        const entries = [];
+                        const entries: string[] = [];
                         for await (const entry of dir) {
                             if (entry.isDirectory()) {
                                 entries.push(entry.name);

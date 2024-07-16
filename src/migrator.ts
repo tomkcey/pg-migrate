@@ -142,9 +142,10 @@ export class Migrator extends Executor<Migration> {
                 const migration = decode(file);
 
                 // Execute the up script
-                await executor.execute(
-                    SQL``.append(chunks.join(constants.EMPTY)),
-                );
+                const stmnt = SQL``.append(chunks.join(constants.EMPTY));
+                await executor.execute(stmnt);
+                this.logger.info(`Applied ${migration.name}\n${stmnt.text}`);
+
                 // Insert a new row in the migrations table
                 await executor.execute(
                     SQL`INSERT INTO`
@@ -213,9 +214,10 @@ export class Migrator extends Executor<Migration> {
                 }
 
                 // Execute the down script
-                await executor.execute(
-                    SQL``.append(chunks.join(constants.EMPTY)),
-                );
+                const stmnt = SQL``.append(chunks.join(constants.EMPTY));
+                await executor.execute(stmnt);
+                this.logger.info(`Applied ${migration.name}\n${stmnt.text}`);
+
                 // Delete the row from the migrations table
                 await executor.execute(
                     SQL`DELETE FROM`
