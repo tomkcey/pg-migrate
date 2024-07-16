@@ -156,8 +156,10 @@ export class Migrator extends Executor<Migration> {
 
                 this.logger.info(`Migration ${directory} ran.`);
             }
-        }).catch(() =>
-            this.logger.error("Something went wrong, canceling migrations."),
+        }).catch((error) =>
+            this.logger.error(
+                `Something went wrong, canceling migrations.\n${JSON.stringify(error, null, 2)}`,
+            ),
         );
 
         this.logger.info("Migration up complete.");
@@ -223,8 +225,10 @@ export class Migrator extends Executor<Migration> {
 
                 this.logger.info(`Migration ${encode(migration)} reverted.`);
             }
-        }).catch(() =>
-            this.logger.error("Something went wrong, canceling migrations."),
+        }).catch((error) =>
+            this.logger.error(
+                `Something went wrong, canceling migrations.\n${JSON.stringify(error, null, 2)}`,
+            ),
         );
 
         this.logger.info("Migration down complete.");
