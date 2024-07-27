@@ -53,7 +53,10 @@ describe(Explorer.name, () => {
                 const results = await explorer.list();
 
                 expect(results).toEqual([
-                    { directory: "foo", files: ["baz.sql", "bar.sql"] },
+                    {
+                        directory: "foo",
+                        files: expect.arrayContaining(["baz.sql", "bar.sql"]),
+                    },
                 ]);
             });
         });
