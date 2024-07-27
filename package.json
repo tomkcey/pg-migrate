@@ -24,6 +24,7 @@
     },
     "homepage": "https://github.com/tomkcey/pg-migrate#readme",
     "dependencies": {
+        "dotenv": "^16.4.5",
         "pg": "^8.11.5",
         "sql-template-strings": "^2.2.2"
     },

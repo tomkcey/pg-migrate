@@ -1,5 +1,8 @@
 import path from "path";
 import { MigratorOptions } from "./migrator";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const DEFAULT_PATH = path.join(__dirname, "..", "migrations");
 const DEFAULT_TABLE = "migrations";
