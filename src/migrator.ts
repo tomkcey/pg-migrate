@@ -224,8 +224,6 @@ export class Migrator extends Executor<Migration> {
                 }
 
                 // Execute the down script
-
-                // Execute the up script
                 const stmnts = this.parseChunkedStatement(chunks);
                 for (const statement of stmnts) {
                     const stmnt = SQL``.append(statement);
