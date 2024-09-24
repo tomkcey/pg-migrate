@@ -2,6 +2,7 @@ import { mkdir, readFile, rm, writeFile } from "fs/promises";
 import { Readable } from "stream";
 import { Explorer } from "./fs";
 import path from "path";
+import { isNil } from "./utils";
 
 const PATH = path.join(__dirname, "test");
 
@@ -93,20 +94,23 @@ describe(Explorer.name, () => {
                     const MIGRATION_PATH = path.join(PATH, DIRECTORY);
 
                     await mkdir(MIGRATION_PATH);
-                    await Promise.all(
-                        FILES.map((file) =>
-                            writeFile(path.join(MIGRATION_PATH, file), "--"),
-                        ),
-                    );
+                    for (const file of FILES) {
+                        await writeFile(path.join(MIGRATION_PATH, file), "--");
+                    }
                 }
 
                 const results = await explorer.find(
                     (result) => result.directory === "foo",
                 );
+                if (isNil(results)) {
+                    fail("Cannot happen");
+                }
+
+                results.files = results.files.sort();
 
                 expect(results).toEqual({
                     directory: "foo",
-                    files: ["baz.sql", "bar.sql"],
+                    files: ["bar.sql", "baz.sql"].sort(),
                 });
             });
         });
