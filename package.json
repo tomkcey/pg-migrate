@@ -33,9 +33,7 @@
         "@types/node": "^22.17.2",
         "@types/pg": "^8.15.5",
         "jest": "^29.7.0",
-        "nodemon": "^3.1.10",
         "prettier": "^3.6.2",
-        "testcontainers": "^10.28.0",
         "ts-jest": "^29.4.1",
         "ts-node": "^10.9.2",
         "typescript": "^5.9.2"
@@ -46,7 +44,6 @@
         "fmt": "prettier --write src/**/*.ts",
         "test": "jest -i",
         "ci": "npm i && npm run fmt && npm run build && npm run test",
-        "dev": "nodemon src/index.ts",
         "clean": "rm -rf dist coverage node_modules",
         "deploy": "npm run build && npm publish --access public",
         "bump:patch": "npm version patch",
