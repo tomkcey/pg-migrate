@@ -5,7 +5,7 @@ import { Logger } from "./interfaces";
 import { UnrecognizedCommandError, isMigrationError } from "./errors";
 import { getConfig } from "./config";
 
-export { Migrator, MigratorOptions };
+export { Migrator, type MigratorOptions };
 
 const COMMANDS = ["create", "up", "down"] as const;
 
