@@ -11,8 +11,10 @@ interface TraversalResult {
 }
 
 async function* traverse(dirPath: string): AsyncGenerator<TraversalResult> {
+    const dirIter = await opendir(dirPath);
+
     const dirs: string[] = [];
-    for await (const entry of await opendir(dirPath)) {
+    for await (const entry of dirIter) {
         if (entry.isDirectory()) {
             dirs.push(entry.name);
         }
@@ -21,11 +23,10 @@ async function* traverse(dirPath: string): AsyncGenerator<TraversalResult> {
     dirs.sort((a, b) => a.localeCompare(b));
 
     for (const dir of dirs) {
-        const files = await opendir(path.join(dirPath, dir));
-
+        const fileIter = await opendir(path.join(dirPath, dir));
         const migrations: string[] = [];
 
-        for await (const file of files) {
+        for await (const file of fileIter) {
             if (file.isFile()) {
                 migrations.push(file.name);
             }
