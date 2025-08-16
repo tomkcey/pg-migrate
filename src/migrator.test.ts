@@ -1,12 +1,14 @@
-import path from "path";
-import { Migrator, MigratorOptions } from "./migrator";
-import { access, opendir, rm } from "fs/promises";
-import { NameAlreadyExistsError } from "./errors";
-import { Executor } from "./db";
-import { Migration } from "./interfaces";
 import { Client, QueryResultRow } from "pg";
 import SQL from "sql-template-strings";
+
+import { access, opendir, rm } from "fs/promises";
+import path from "path";
+
+import { Migrator, MigratorOptions } from "./migrator";
+import { NameAlreadyExistsError } from "./errors";
 import { constants, isNil, pad } from "./utils";
+import { Migration } from "./interfaces";
+import { Executor } from "./db";
 
 const PATH = path.join(__dirname, "..", "migrations");
 const TABLE = "migrations";

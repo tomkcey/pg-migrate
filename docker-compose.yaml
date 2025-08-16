@@ -1,0 +1,10 @@
+services:
+  postgresql:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test
+      PGPASSWORD: test
+    ports:
+      - 5432:5432

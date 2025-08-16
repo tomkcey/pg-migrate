@@ -17,5 +17,16 @@ jobs:
               run: npm run fmt
             - name: Build application
               run: npm run build
+            - name: Start services
+              run: docker compose up -d
+            - name: Wait for PostgreSQL to be ready
+              run: |
+                  until docker compose exec postgresql pg_isready -U test -d test; do
+                    echo "Waiting for PostgreSQL..."
+                    sleep 2
+                  done
             - name: Run tests
               run: npm run test
+            - name: Stop services
+              run: docker compose down
+              if: always()
