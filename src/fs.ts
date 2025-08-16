@@ -11,22 +11,27 @@ interface TraversalResult {
 }
 
 async function* traverse(dirPath: string): AsyncGenerator<TraversalResult> {
-    const directories = await opendir(dirPath);
+    const dirs: string[] = [];
+    for await (const entry of await opendir(dirPath)) {
+        if (entry.isDirectory()) {
+            dirs.push(entry.name);
+        }
+    }
 
-    for await (const directory of directories) {
+    dirs.sort((a, b) => a.localeCompare(b));
+
+    for (const dir of dirs) {
+        const files = await opendir(path.join(dirPath, dir));
+
         const migrations: string[] = [];
 
-        if (directory.isDirectory()) {
-            const files = await opendir(path.join(dirPath, directory.name));
-
-            for await (const file of files) {
-                if (file.isFile()) {
-                    migrations.push(file.name);
-                }
+        for await (const file of files) {
+            if (file.isFile()) {
+                migrations.push(file.name);
             }
         }
 
-        yield { directory: directory.name, files: migrations };
+        yield { directory: dir, files: migrations };
     }
 }
 
@@ -52,11 +57,9 @@ export class Explorer {
     public async list(): Promise<TraversalResult[]> {
         return access(this.path)
             .then(async () => {
-                const iterable = traverse(this.path);
-
                 const results: TraversalResult[] = [];
 
-                for await (const result of iterable) {
+                for await (const result of traverse(this.path)) {
                     results.push(result);
                 }
 
